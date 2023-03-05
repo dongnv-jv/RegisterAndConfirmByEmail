@@ -4,6 +4,7 @@ import com.example.service.UserDetailServiceCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
     @Autowired
+
     public UserDetailServiceCustom userDetailService;
 
     @Bean
@@ -34,7 +36,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public  DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -52,9 +54,14 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                .requestMatchers( "/confirm/**")
+                .requestMatchers( "/confirm/**") .permitAll()
+                .requestMatchers( "/login")
                 .permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .defaultSuccessUrl("/sucess")
+        ;
 
         return http.build();
 

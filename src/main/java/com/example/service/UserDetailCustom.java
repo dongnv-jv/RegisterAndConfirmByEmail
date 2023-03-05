@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.entity.User;
+import com.example.factory.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,28 +11,37 @@ import java.util.Collections;
 
 public class UserDetailCustom implements UserDetails {
 
-    User user;
 
+    private String email;
+    private String password;
+    private Boolean locked = false;
+    private Boolean enabled = false;
+    private Role role;
 
     public UserDetailCustom(User user) {
-        this.user = user;
+
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.locked = user.getLocked();
+        this.enabled = user.getEnabled();
+        this.role = user.getRole();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(user.getRole().name());
+                new SimpleGrantedAuthority(role.name());
         return Collections.singletonList(authority);
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return email;
     }
 
     @Override
@@ -41,7 +51,7 @@ public class UserDetailCustom implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return locked ;
     }
 
     @Override
@@ -51,6 +61,6 @@ public class UserDetailCustom implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

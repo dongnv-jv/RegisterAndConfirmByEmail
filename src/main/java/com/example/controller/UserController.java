@@ -28,5 +28,10 @@ public class UserController {
 
         return detailServiceCustom.confirmToken(token);
     }
+    @GetMapping("/sucess")
+    public String loginsucess() {
 
+
+        return "Login sucess";
+    }
 }

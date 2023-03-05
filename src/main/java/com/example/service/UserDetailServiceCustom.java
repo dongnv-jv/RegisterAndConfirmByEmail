@@ -2,12 +2,15 @@ package com.example.service;
 
 import com.example.entity.ConfirmToken;
 import com.example.entity.User;
+import com.example.exceptionhandle.UserNotEnable;
 import com.example.factory.Role;
 import com.example.repository.ConfirmTokenRepo;
 import com.example.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -24,12 +27,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+//@Scope("prototype")
 public class UserDetailServiceCustom implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ConfirmTokenRepo confirmTokenRepo;
     @Autowired
+
     private BCryptPasswordEncoder encoder;
     @Autowired
     private JavaMailSender javaMailSender;
@@ -39,14 +44,22 @@ public class UserDetailServiceCustom implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(username);
-        if (user != null) {
+
+        if (user == null) {
             throw new UsernameNotFoundException("Email " + username + "not found");
+        }
+        else if(!user.getEnabled()){
+            try {
+                throw new UserNotEnable("User " + username + " is disabled");
+            } catch (UserNotEnable e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return new UserDetailCustom(user);
     }
 
-    @Async
+//    @Async("asyncExecutor")
     public String registerUser(User user) throws UsernameNotFoundException {
 
         boolean isExistEmail = (userRepository.findUserByEmail(user.getEmail())) != null;
@@ -77,7 +90,7 @@ public class UserDetailServiceCustom implements UserDetailsService {
         return token;
     }
 
-    @Async
+//    @Async("asyncExecutor")
     public void sendMail(String mail, String token) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         String link = "http://localhost:8080/confirm/" + token;
