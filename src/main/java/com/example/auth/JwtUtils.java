@@ -1,21 +1,20 @@
 package com.example.auth;
 
 import io.jsonwebtoken.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.function.Function;
 @Slf4j
+@Component
 public class JwtUtils {
 
 
-    private String jwtSecret;
+    private String jwtSecret="dhfksjdhsjdhfkjshgjksdhgksdgfhsdfghdfjfgjfgjhdfgjfhkfgjdgjfkgjlkfhjdfhg" +
+            "dfhfgkhfghdfhdfjkfgjdfghdfhfgkfgjfghfgfhfjfgjdfgdfhdfhfgjghkghkghjghkjghtyurtyeryturth";
     private int jwtExp = 600000;
 
     public String generateJwt(String username) {
-
         return Jwts.builder().setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration((new Date((new Date()).getTime() + jwtExp)))

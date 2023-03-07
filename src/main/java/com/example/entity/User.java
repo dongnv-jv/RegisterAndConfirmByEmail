@@ -23,7 +23,6 @@ public class User {
     private Long id;
     @Column(name = "user_name")
     private String name;
-
     @Column(name = "user_password")
     private String password;
     @Column(name = "user_email")

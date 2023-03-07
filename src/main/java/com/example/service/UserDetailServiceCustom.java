@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.entity.ConfirmToken;
+import com.example.entity.ConfirmTokenRegister;
 import com.example.entity.User;
 import com.example.exceptionhandle.UserNotEnable;
 import com.example.factory.Role;
@@ -8,12 +8,11 @@ import com.example.repository.ConfirmTokenRepo;
 import com.example.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,8 +25,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
+//@EnableAsync
 @Service
 //@Scope("prototype")
+@Slf4j
 public class UserDetailServiceCustom implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
@@ -39,16 +40,15 @@ public class UserDetailServiceCustom implements UserDetailsService {
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
-    ConfirmMailService confirmMailService;
+    private ConfirmMailService confirmMailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(username);
-
+//        log.warn(user.getEmail());
         if (user == null) {
             throw new UsernameNotFoundException("Email " + username + "not found");
-        }
-        else if(!user.getEnabled()){
+        } else if (!user.getEnabled()) {
             try {
                 throw new UserNotEnable("User " + username + " is disabled");
             } catch (UserNotEnable e) {
@@ -59,7 +59,7 @@ public class UserDetailServiceCustom implements UserDetailsService {
         return new UserDetailCustom(user);
     }
 
-//    @Async("asyncExecutor")
+    //    @Async
     public String registerUser(User user) throws UsernameNotFoundException {
 
         boolean isExistEmail = (userRepository.findUserByEmail(user.getEmail())) != null;
@@ -78,26 +78,26 @@ public class UserDetailServiceCustom implements UserDetailsService {
         String token = UUID.randomUUID().toString();
 
 
-        ConfirmToken confirmToken = new ConfirmToken(token,
+        ConfirmTokenRegister confirmTokenRegister = new ConfirmTokenRegister(token,
                 LocalDate.now(),
                 LocalDate.now().plus(15, ChronoUnit.DAYS),
                 user
         );
 
-        confirmTokenRepo.save(confirmToken);
+        confirmTokenRepo.save(confirmTokenRegister);
         sendMail(user.getEmail(), token);
 
         return token;
     }
 
-//    @Async("asyncExecutor")
+    //    @Async
     public void sendMail(String mail, String token) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        String link = "http://localhost:8080/confirm/" + token;
+        String link = "http://localhost:8080/api/v1/auth/confirm/" + token;
         String content = "<h1>Xác nhận email</h1>\n" +
-                "\t<p>Cảm ơn bạn đã đăng ký tài khoản. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào liên kết dưới đây:</p>\n" +
-                "\t<p><a href=\"" + link + "\">Xác nhận địa chỉ email</a></p>\n" +
-                "\t<p>Nếu bạn không thực hiện thao tác này, tài khoản của bạn sẽ không hoạt động và sẽ bị xóa sau 15 phút.</p>\n";
+                "<p>Cảm ơn bạn đã đăng ký tài khoản. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào liên kết dưới đây:</p>\n" +
+                "<p><a href=\"" + link + "\">Xác nhận địa chỉ email</a></p>\n" +
+                "<p>Nếu bạn không thực hiện thao tác này, tài khoản của bạn sẽ không hoạt động và sẽ bị xóa sau 15 phút.</p>\n";
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, false, StandardCharsets.UTF_8.name());
             message.setTo(mail);
@@ -117,7 +117,7 @@ public class UserDetailServiceCustom implements UserDetailsService {
     public String confirmToken(String token) {
 
 
-        Optional<ConfirmToken> tokenRepoOptional = confirmTokenRepo.findByToken(token);
+        Optional<ConfirmTokenRegister> tokenRepoOptional = confirmTokenRepo.findByToken(token);
 
 
         if (!tokenRepoOptional.isPresent()) {

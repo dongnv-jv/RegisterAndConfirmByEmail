@@ -1,25 +1,21 @@
-package com.example.security;
+package com.example.config;
 
+import com.example.auth.JwtEntryPointCs;
+import com.example.auth.JwtFilterCs;
+import com.example.auth.MyFilterCustom;
 import com.example.service.UserDetailServiceCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +23,11 @@ public class SecurityConfig {
     @Autowired
 
     public UserDetailServiceCustom userDetailService;
+    @Autowired
+    JwtFilterCs myFilterCustom;
+    @Autowired
+    JwtEntryPointCs jwtEntryPointCs;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -34,9 +35,8 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
-    public  DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -52,28 +52,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                .requestMatchers( "/confirm/**") .permitAll()
-                .requestMatchers( "/login")
-                .permitAll()
+                .cors()
+                .and()
+                .csrf()
+                .disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtEntryPointCs)
+                .and()
+                .addFilterBefore(myFilterCustom, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests().requestMatchers("/api/v1/auth/**").permitAll()
+//                .requestMatchers("/api/v1/auth/confirm/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .defaultSuccessUrl("/sucess")
-        ;
+                .authenticationProvider(authenticationProvider());
+
+//        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().
-                requestMatchers("/register")
-
-                ;
-    }
-
 
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ConfirmToken {
+public class ConfirmTokenRegister {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "confirm_token_id")
@@ -29,7 +29,7 @@ public class ConfirmToken {
     @JoinColumn(name = "confirm_token_user")
     private User user;
 
-    public ConfirmToken(String token, LocalDate createdAt, LocalDate expiresAt, User user) {
+    public ConfirmTokenRegister(String token, LocalDate createdAt, LocalDate expiresAt, User user) {
         this.token = token;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
