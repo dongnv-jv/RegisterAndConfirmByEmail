@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.entity;
 
 import com.example.entity.User;
 import com.example.factory.Role;

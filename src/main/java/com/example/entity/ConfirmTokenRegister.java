@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "confirm_token")
@@ -20,16 +21,16 @@ public class ConfirmTokenRegister {
     @Column(name = "confirm_token_token")
     private String token;
     @Column(name = "confirm_token_created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     @Column(name = "confirm_token_confirmed_at")
-    private LocalDate confirmedAt;
+    private LocalDateTime confirmedAt;
     @Column(name = "confirm_token_expires_at")
-    private LocalDate expiresAt;
+    private LocalDateTime expiresAt;
     @ManyToOne
     @JoinColumn(name = "confirm_token_user")
     private User user;
 
-    public ConfirmTokenRegister(String token, LocalDate createdAt, LocalDate expiresAt, User user) {
+    public ConfirmTokenRegister(String token, LocalDateTime createdAt, LocalDateTime expiresAt, User user) {
         this.token = token;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;

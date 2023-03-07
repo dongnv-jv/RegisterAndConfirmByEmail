@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_control")
@@ -28,9 +29,9 @@ public class User {
     @Column(name = "user_email")
     private String email;
     @Column(name = "user_created_at")
-    private LocalDate createDate;
+    private LocalDateTime createDate;
     @Column(name = "user_updated_at")
-    private LocalDate updateDate;
+    private LocalDateTime updateDate;
     @Enumerated(EnumType.STRING)
     private Role role;
     private Boolean locked = false;

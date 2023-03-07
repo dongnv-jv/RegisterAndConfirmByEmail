@@ -15,19 +15,20 @@ public class UserController {
     @Autowired
     private UserDetailServiceCustom detailServiceCustom;
     @Autowired
-    JwtService jwtService;
-
-
+    private JwtService jwtService;
     @Autowired
     ConfirmMailService confirmMailService;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RequestRegister request) {
         return ResponseEntity.ok(jwtService.register(request));
     }
+
     @GetMapping("/confirm/{token}")
     public String confirmUser(@PathVariable("token") String token) {
         return detailServiceCustom.confirmToken(token);
     }
+
     @GetMapping("/sucess")
     public String loginsucess() {
         return "Login sucess";
@@ -37,7 +38,6 @@ public class UserController {
     public ResponseEntity<?> singin(@RequestBody RequestRegister request) {
         return ResponseEntity.ok(jwtService.authenticate(request));
     }
-
 
 
 }

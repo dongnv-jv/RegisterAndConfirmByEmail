@@ -12,11 +12,7 @@ public class ConfirmMailService {
     @Autowired
     private UserRepository userRepository;
     public String confirmMail(Long id){
-
       int a=  userRepository.setEnabled(id);
-
-
-
       return a<=0 ? "Confirm failed" : "Confirm successful";
     }
 
