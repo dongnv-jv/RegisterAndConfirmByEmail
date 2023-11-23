@@ -1,15 +1,18 @@
 package com.example.auth;
 
 import com.example.service.UserDetailServiceCustom;
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -19,11 +22,10 @@ import java.io.IOException;
 public class MyFilterCustom implements Filter {
 
 
-
-//    @Autowired
+    //    @Autowired
     private JwtUtils jwtUtils;
 
-//    @Autowired
+    //    @Autowired
     private UserDetailServiceCustom userServiceCustom;
 
 
@@ -31,12 +33,12 @@ public class MyFilterCustom implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
 
 
-
         Filter.super.init(filterConfig);
     }
+
     private String parseJwt(HttpServletRequest request) {
         String responseHeader = request.getHeader("Authorization");
-        log.warn("responseHeader: "+ responseHeader);
+        log.warn("responseHeader: " + responseHeader);
 
         if (StringUtils.hasText(responseHeader) && responseHeader.startsWith("Bearer ")) {
             return responseHeader.substring(7, responseHeader.length());
@@ -44,11 +46,12 @@ public class MyFilterCustom implements Filter {
         }
         return null;
     }
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
             String jwt = parseJwt((HttpServletRequest) servletRequest);
-            log.warn("Jwt : "+ jwt);
+            log.warn("Jwt : " + jwt);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserFromToken(jwt);
 
@@ -60,7 +63,7 @@ public class MyFilterCustom implements Filter {
                                 userDetails.getAuthorities());
 
 
-                log.warn("username : "+ username);
+                log.warn("username : " + username);
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails((HttpServletRequest) servletRequest));
 

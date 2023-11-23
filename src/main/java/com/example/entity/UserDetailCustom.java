@@ -1,10 +1,10 @@
 package com.example.entity;
 
-import com.example.entity.User;
 import com.example.factory.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -13,8 +13,8 @@ public class UserDetailCustom implements UserDetails {
 
     private String email;
     private String password;
-    private Boolean locked ;
-    private Boolean enabled ;
+    private final Boolean locked;
+    private final Boolean enabled;
     private Role role;
 
     public UserDetailCustom(User user) {
@@ -50,7 +50,7 @@ public class UserDetailCustom implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !locked ;
+        return !locked;
     }
 
     @Override

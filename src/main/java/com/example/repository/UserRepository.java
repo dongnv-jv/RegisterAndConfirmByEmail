@@ -13,9 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE User u SET u.enabled = TRUE WHERE u.id=?1")
-     int setEnabled(Long id);
-
-
+    int setEnabled(Long id);
 
 
 }

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="icon"/>
+</head>
+
+<body>
+    <p>“Xin chào,</p>
+    <p>Hãy nhấn vào liên kết sau để xác nhận tài khoản:
+        <a th:href="${link}" style="color: red; font-weight: bold" target="_blank">Xác nhận</a>
+    <p>Đường dẫn có hiệu lực trong 15 phút.</p>
+</body>
+
+</html>

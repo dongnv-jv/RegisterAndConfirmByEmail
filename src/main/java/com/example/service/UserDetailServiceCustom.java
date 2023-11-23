@@ -7,21 +7,14 @@ import com.example.exceptionhandle.UserNotEnable;
 import com.example.factory.Role;
 import com.example.repository.ConfirmTokenRepo;
 import com.example.repository.UserRepository;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -60,7 +53,7 @@ public class UserDetailServiceCustom implements UserDetailsService {
         return new UserDetailCustom(user);
     }
 
-//    @Async("asyncExecutor")
+    //    @Async("asyncExecutor")
     public String registerUser(User user) throws UsernameNotFoundException {
 
         boolean isExistEmail = (userRepository.findUserByEmail(user.getEmail())) != null;
@@ -92,9 +85,6 @@ public class UserDetailServiceCustom implements UserDetailsService {
     }
 
 
-
-
-
     public String confirmToken(String token) {
 
 
@@ -112,7 +102,7 @@ public class UserDetailServiceCustom implements UserDetailsService {
 
             System.out.println(id);
             confirmMailService.confirmMail(id);
-            confirmTokenRepo.setConfirmToken(LocalDate.now(), id);
+            confirmTokenRepo.setConfirmToken(LocalDateTime.now(), id);
         }
 
         return "Confirmed";

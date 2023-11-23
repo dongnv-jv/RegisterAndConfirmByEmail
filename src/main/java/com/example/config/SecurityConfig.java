@@ -2,7 +2,6 @@ package com.example.config;
 
 import com.example.auth.JwtEntryPointCs;
 import com.example.auth.JwtFilterCs;
-import com.example.auth.MyFilterCustom;
 import com.example.service.UserDetailServiceCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

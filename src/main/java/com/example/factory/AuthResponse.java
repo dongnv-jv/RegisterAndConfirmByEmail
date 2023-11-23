@@ -1,6 +1,5 @@
 package com.example.factory;
 
-import com.example.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
