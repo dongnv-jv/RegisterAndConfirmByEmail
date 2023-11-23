@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+
+  department-service:
+    container_name: register-service
+    build: .
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - register-postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://register-postgres:5432/demo2
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123456
+
+  register-postgres:
+    container_name: register-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=demo2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
